@@ -1,40 +1,35 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {Alert} from 'react-native';
+import Loading from './Loading';
+import * as Location from 'expo-location';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      {/*
-      <Text style={styles.text}>Hello!</Text>
-      <Text style={styles.text}>Hello!</Text>
-      */}
-      <View style={styles.yellowView}>
-        {/*<Text>Hello</Text>*/}
-        </View>
-      <View style={styles.blueView}>
-        {/*<Text>Hello</Text>*/}
-      </View>
-    </View>
-  );
-}
+const API_KEY = '981de81e717445464457a8a94529f9bb';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: 'black',
-    // width: '100%'
-  },
-  yellowView: {
-    flex: 1,
-    backgroundColor: 'yellow'
-  },
-  blueView: {
-    flex: 3,
-    backgroundColor: 'blue'
+export default class App extends React.Component {
+
+  state = {
+    isLoading: true
   }
-});
+
+  getLocation = async () => {
+    try {
+      // throw Error();
+      await Location.requestPermissionsAsync();
+      const {coords : {latitude, longitude}} = await Location.getCurrentPositionAsync();
+      // Send to API and get Weather
+      
+      //console.log(coords);
+      this.setState({ isLoading : false });
+    } catch (error) {
+      Alert.alert("Can't find you.", "So sad");
+    }
+    
+  }
+  componentDidMount() {
+    this.getLocation();
+  }
+  render() {
+    const { isLoading } = this.state;
+    return isLoading ? <Loading /> : null;
+  }
+}
